@@ -5,6 +5,7 @@
 #![allow(warnings)]
 
 extern crate libm;
+use cortex_m_semihosting::{hprint, hprintln};
 // pick a panicking behavior
 use panic_halt as _; // you can put a breakpoint on `rust_begin_unwind` to catch panics
 // use panic_abort as _; // requires nightly
@@ -90,13 +91,16 @@ fn readSensor(input:u16) -> u8
 }
 /*Will need more paras to account for no globals*/
 fn accel_sample(nv_seed:& mut u16) -> threeAxis_t_8
-{
-
-    
+{ 
     let mut seed:u16 = *nv_seed;
     let xs = readSensor(seed*17);
-    let ys = readSensor(seed*17*17);
-    let zs = readSensor(seed*17*17*17);
+    let tmp:u32 = (seed as u32 * 17 * 17 *17 )% 85;
+
+    let ys = tmp as u8;//readSensor(seed*17*17);
+    let tmp:u32 = (seed as u32 * 17 * 17 *17)%85;
+    //hprintln!("the tmp val for zs {}", tmp);
+    
+    let zs =  tmp as u8; //readSensor(seed*17*17*17 as u16);
     let result: threeAxis_t_8 = threeAxis_t_8{x:xs, y:ys, z:zs};
     
     seed = seed +1;
@@ -271,6 +275,8 @@ fn print_stats(stats:&stats_t) -> ()
 	//if not u32, rust throws errors. 
     //manually guard output
 	// output_guard_start();
+
+    hprintln!("{}", stats.stationaryCount);
 	// printf(b"stats: s %l (%lu%%) m %l (%l%%) sum/tot %l/%l: %c\r\n\0".as_ptr(),
 	//        stats.stationaryCount as u32, resultStationaryPct as u32,
     //        stats.movingCount as u32, resultMovingPct as u32,
@@ -398,7 +404,7 @@ fn select_mode(prev_pin_state:&mut u8, count: &mut u16) -> u8
 
 #[entry]
 fn main() -> ! {
-    asm::nop(); // To not have main optimize to abort in release mode, remove when you add code
+    hprintln!("test").unwrap();
     let mut prev_pin_state:u8 = run_mode_t::MODE_IDLE as u8;
     let count: &'static mut u16 = big_nv!(COUNT_NV: u16 = 1);
     let model: &'static mut model_t =
@@ -419,10 +425,11 @@ fn main() -> ! {
         
     let _v_seed: &'static mut u16 = big_nv!(SEED_NV: u16 = 1);
 
-
+    
     loop {
         let mut localSeed = *_v_seed;
         let mode:u8 = select_mode(&mut prev_pin_state, count);
+        hprintln!("{}", mode).unwrap();
         if mode == 2 {
             train(&mut model.stationary, &mut localSeed);
         } else if mode == 1 {
