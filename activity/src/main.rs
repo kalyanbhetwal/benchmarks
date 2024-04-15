@@ -99,7 +99,7 @@ fn accel_sample(nv_seed:& mut u16) -> threeAxis_t_8
     let ys = tmp as u8;//readSensor(seed*17*17);
     let tmp:u32 = (seed as u32 * 17 * 17 *17)%85;
     //hprintln!("the tmp val for zs {}", tmp);
-    
+
     let zs =  tmp as u8; //readSensor(seed*17*17*17 as u16);
     let result: threeAxis_t_8 = threeAxis_t_8{x:xs, y:ys, z:zs};
     
@@ -429,7 +429,6 @@ fn main() -> ! {
     loop {
         let mut localSeed = *_v_seed;
         let mode:u8 = select_mode(&mut prev_pin_state, count);
-        hprintln!("{}", mode).unwrap();
         if mode == 2 {
             train(&mut model.stationary, &mut localSeed);
         } else if mode == 1 {
