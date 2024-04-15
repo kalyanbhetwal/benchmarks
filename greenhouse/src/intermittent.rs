@@ -5,7 +5,7 @@ pub fn Fresh<T>(_var:T) -> (){}
 
 #[allow(dead_code)]
 #[allow(non_snake_case)]
-fn Consistent<T>(_var:T, _id:u16) -> (){}
+pub fn Consistent<T>(_var:T, _id:u16) -> (){}
 
 #[allow(dead_code)]
 #[allow(non_snake_case)]
