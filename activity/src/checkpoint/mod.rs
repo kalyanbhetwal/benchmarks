@@ -285,9 +285,9 @@ pub fn checkpoint(){
 }
 
 pub fn erase_all(flash: &mut FLASH){
-    let start_address = 0x0801_0000;
+    let start_address = 0x0803_0000;
 
-    for i in 0..255{
+    for i in 0..100{
         let page = start_address + i * 2*1024;
          erase_page(flash,  page);
     }
