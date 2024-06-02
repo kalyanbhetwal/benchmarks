@@ -9,30 +9,22 @@ use panic_halt as _;
 
 use cortex_m::peripheral::SCB;
 use cortex_m_rt::entry;
+use cortex_m::interrupt;
 use cortex_m_semihosting::hprintln;
 use stm32f3xx_hal_v2::{pac::Peripherals, pac::Interrupt};
-
 use volatile::Volatile;
-
 use cortex_m::peripheral::NVIC;
-use stm32f3xx_hal_v2::interrupt;
 
 mod checkpoint;
 use checkpoint::{checkpoint, restore, delete_pg, delete_all_pg};
 
 fn gpioTwiddle() -> (){}
 
-
 #[macro_use]
 mod intermittent;
 
-//use num_traits::Float;
-
-// use num_traits::real::Real;
-
 // Number of samples to discard before recording training set
 const NUM_WARMUP_SAMPLES:u16 = 3;
-
 const ACCEL_WINDOW_SIZE:usize = 3;
 const  MODEL_SIZE:usize = 16;
 const SAMPLE_NOISE_FLOOR:u8 = 10; // TODO: made up value
@@ -410,7 +402,7 @@ fn select_mode(prev_pin_state:&mut u8, count: &mut u16) -> u8
 #[entry]
 fn main() -> ! {
 
-     //delete_all_pg();
+    //delete_all_pg();
     //delete_pg(0x0803_0000 as u32); 
     // Get the peripheral access
     let dp  = Peripherals::take().unwrap();
@@ -737,30 +729,19 @@ unsafe{
     }
 }
 
-// Interrupt handler for EXTI0
-#[interrupt]
-fn EXTI0() {
-    // Clear the interrupt pending bit
-    // let lr: u32;
-    // unsafe {
-    //     asm!(
-    //         "mov {}, lr",
-    //         out(reg) lr
-    //     );
-    // }
-    // hprintln!("LR value: {:#010x}", lr).unwrap();
+// Interrupt handler for external interrupt line 0
+#[allow(non_snake_case)]
+#[no_mangle]
+pub extern "C" fn EXTI0() {
+    // Enter a critical section to access the shared mutable variable
 
     unsafe{
         let peripherals = Peripherals::steal();
         peripherals.EXTI.pr1.modify(|_, w| w.pr0().set_bit());
     }
-    //hprintln!("Interrupt happened").unwrap();
+    interrupt::disable();
     checkpoint();
-   //hprintln!("Checkpoint taken").unwrap();
-    // let a = 10 + 2;
-    // let b = a + 10;
-    //reset_mcu();
-    // Your interrupt handling code here
+    unsafe {interrupt::enable();}
 }
 
 #[no_mangle]

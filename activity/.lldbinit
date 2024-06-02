@@ -1,0 +1,3 @@
+settings set target.load-cwd-lldbinit true
+target create target/thumbv7em-none-eabihf/debug/activity
+gdb-remote 3333

@@ -70,7 +70,7 @@ pub fn erase_page(flash: &mut FLASH, page: u32){
 
     // 6. lock the flash
     while flash.sr.read().bsy().bit_is_set() {}
-    flash.cr.modify(|_, w| w.lock().set_bit());
+   // flash.cr.modify(|_, w| w.lock().set_bit());
 
 }
 

@@ -214,9 +214,10 @@ pub fn checkpoint(){
                 break;
             }
             flash_start_address.write(flash_start_address.read() + offset); 
-            if flash_start_address.read() + checkpoint_size.read() >= flash_end_address.read(){
-                erase_all(&mut flash);
+            if flash_start_address.read() + checkpoint_size.read() >= flash_end_address.read() {
+               erase_all(&mut flash);
                flash_start_address = Volatile::new(0x0803_0000);
+               break;
             }
         }
         asm::dmb();
@@ -313,7 +314,7 @@ pub fn restore()->bool{
         loop{
             
             offset = ptr::read_volatile(flash_start_address  as *const u32);
-             
+  
             if  ptr::read_volatile((flash_start_address + offset) as *const u32) == 0xffff_ffff{
                 break;
             }
@@ -399,15 +400,21 @@ pub fn restore()->bool{
         asm!("POP {{r0}}");
         
         asm!("adds sp, sp, #56");
-        asm!("adds sp, sp, #16");
+        asm!("adds sp, sp, #8");
 
         // asm!("POP {{r0, r1, r2, r3, r12, lr}}");
         // asm!("LDMIA sp!, {{pc, xPSR}}");
 
         asm!("POP {{r0, r1, r2, r3}}");
-        asm!("POP {{r4, r5, r6, r7}}");
-        asm!("MSR xPSR, r7");
-        asm!("mov pc, r6");    // pc is r15
+        asm!("adds sp, sp, #4");
+        asm!("POP {{r4}}");
+        asm!("adds sp, sp, #16"); //stack alignment issue
+        asm!("adds sp, sp, #64"); //stack alignment issue
+
+
+       // asm!("POP {{r4, r5, r6, r7}}");
+       // asm!("MSR xPSR, r7");
+        asm!("mov pc, r4");    // pc is r15
         //asm!("mov r15, r14"); // I am writing my own function to handle interrupt 
 
 
