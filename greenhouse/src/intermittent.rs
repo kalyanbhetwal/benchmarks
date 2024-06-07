@@ -16,7 +16,7 @@ fn FreshConsistent<T>(_var:T, _id:u16) -> (){}
 macro_rules! nv {
     ($name:ident : $ty:ty = $expr:expr) => {
 	unsafe {
-	    #[link_section = ".nv_vars"]
+	    #[link_section = ".fram_section"]
 	    static mut $name: Option<$ty> = None;
 
 	    let used = $name.is_some();
@@ -35,7 +35,7 @@ macro_rules! nv {
 macro_rules! big_nv {
     ($name:ident : $ty:ty = $expr:expr) => {
 	unsafe {
-	    //#[link_section = ".nv_vars"]
+	    #[link_section = ".fram_section"]
 	    static mut $name:$ty = $expr;
 		& mut $name
 
