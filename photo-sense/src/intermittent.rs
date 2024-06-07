@@ -1,5 +1,3 @@
-
-
 pub fn start_atomic(){}
 pub fn end_atomic(){}
 //add any externs, as from drivers, here
@@ -43,7 +41,7 @@ macro_rules! nv {
 macro_rules! big_nv {
     ($name:ident : $ty:ty = $expr:expr) => {
 	unsafe {
-	    //#[link_section = ".nv_vars"]
+	    #[link_section = ".fram_section"]
 	    static mut $name:$ty = $expr;
 		& mut $name
 

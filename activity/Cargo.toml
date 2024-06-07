@@ -13,7 +13,8 @@ cortex-m-semihosting = "0.3.3"
 panic-halt = "0.2.0"
 stm32f3xx-hal-v2 = {version = "0.6.0", features = ["stm32f303xe","rt"] }
 critical-section = "1.1.2"
-libm = "0.2.1"
+libm = "0.2.1" 
+pin_init = { path = "../pin_init" }
 
 # Uncomment for the panic example.
 # panic-itm = "0.4.1"

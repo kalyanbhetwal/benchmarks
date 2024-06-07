@@ -5,8 +5,7 @@ use core::mem;
 use core::ptr;
 use cortex_m::asm::nop;
 use panic_halt as _;
-
-
+ 
 use cortex_m::peripheral::SCB;
 use cortex_m_rt::entry;
 use cortex_m::interrupt;
@@ -466,154 +465,155 @@ fn main() -> ! {
       dp.RCC.ahbenr.modify(|_, w| w.flitfen().set_bit());  
       dp.RCC.ahbenr.modify(|_, w| w.fmcen().set_bit());  
  
- 
       dp.RCC.apb2enr.modify(|_, w| w.syscfgen().set_bit());
       dp.RCC.apb1enr.modify(|_, w| w.pwren().set_bit());
  
-    let mut gpiod = dp.GPIOD;
-    let mut gpioe = dp.GPIOE;
-    let mut gpiof = dp.GPIOF;
-    let mut gpiog = dp.GPIOG;
-    let mut gpioh = dp.GPIOH;
+        let mut gpiod = dp.GPIOD;
+        let mut gpioe = dp.GPIOE;
+        let mut gpiof = dp.GPIOF;
+        let mut gpiog = dp.GPIOG;
+        let mut gpioh = dp.GPIOH;
+
+    // ph.ph0.into_af12(&mut ph.moder, &mut ph.afrl); //FMC_A0
+    // ph.ph1.into_af12(&mut ph.moder, &mut ph.afrl); //FMC_A1
+    // pf.pf2.into_af12(&mut pf.moder, &mut pf.afrl); //FMC_A2
+    // pf.pf3.into_af12(&mut pf.moder, &mut pf.afrl); //FMC_A3
+    // pf.pf4.into_af12(&mut pf.moder, &mut pf.afrl); //FMC_A4
+    // pf.pf5.into_af12(&mut pf.moder, &mut pf.afrl); //FMC_A5
+
+    
+    gpioh.moder.modify(|_, w| {w.moder0().alternate()});
+    gpioh.afrl.modify(|_, w| {  w.afrl0().af12()});
+    gpioh.ospeedr.modify(|_, w| w.ospeedr0().very_high_speed());
+
+
+    gpioh.moder.modify(|_, w| {w.moder1().alternate()});
+    gpioh.afrl.modify(|_, w| {  w.afrl1().af12()});
+    gpioh.ospeedr.modify(|_, w| w.ospeedr1().very_high_speed());
+
+
+    gpiof.moder.modify(|_, w| {w.moder2().alternate()});
+    gpiof.afrl.modify(|_, w| {  w.afrl2().af12()});
+    gpiof.ospeedr.modify(|_, w| w.ospeedr2().very_high_speed());
+
+
+    gpiof.moder.modify(|_, w| {w.moder3().alternate()});
+    gpiof.afrl.modify(|_, w| {  w.afrl3().af12()});
+    gpiof.ospeedr.modify(|_, w| w.ospeedr3().very_high_speed());
+
+    gpiof.moder.modify(|_, w| {w.moder4().alternate()});
+    gpiof.afrl.modify(|_, w| {  w.afrl4().af12()});
+    gpiof.ospeedr.modify(|_, w| w.ospeedr4().very_high_speed());
+
+
+    gpiof.moder.modify(|_, w| {w.moder5().alternate()});
+    gpiof.afrl.modify(|_, w| {  w.afrl5().af12()});
+    gpiof.ospeedr.modify(|_, w| w.ospeedr5().very_high_speed());
+
+        
+        // pf.pf12.into_af12(&mut pf.moder, &mut pf.afrh); //FMC_A6
+        // pf.pf13.into_af12(&mut pf.moder, &mut pf.afrh); //FMC_A7
+        // pf.pf14.into_af12(&mut pf.moder, &mut pf.afrh); //FMC_A8
+        // pf.pf15.into_af12(&mut pf.moder, &mut pf.afrh); //FMC_A9
+
+    gpiof.moder.modify(|_, w| {w.moder12().alternate()});
+    gpiof.afrh.modify(|_, w| {  w.afrh12().af12()});
+    gpiof.ospeedr.modify(|_, w| w.ospeedr12().very_high_speed());
+
+
+    gpiof.moder.modify(|_, w| {w.moder13().alternate()});
+    gpiof.afrh.modify(|_, w| {  w.afrh13().af12()});
+    gpiof.ospeedr.modify(|_, w| w.ospeedr13().very_high_speed());
+
+
+    gpiof.moder.modify(|_, w| {w.moder14().alternate()});
+    gpiof.afrh.modify(|_, w| {  w.afrh14().af12()});
+    gpiof.ospeedr.modify(|_, w| w.ospeedr14().very_high_speed());
+
+
+    gpiof.moder.modify(|_, w| {w.moder15().alternate()});
+    gpiof.afrh.modify(|_, w| {  w.afrh15().af12()});
+    gpiof.ospeedr.modify(|_, w| w.ospeedr15().very_high_speed());
+
+  // pg.pg0.into_af12(&mut pg.moder, &mut pg.afrl); //FMC_A10
+    // pg.pg1.into_af12(&mut pg.moder, &mut pg.afrl); //FMC_A11
+    // pg.pg2.into_af12(&mut pg.moder, &mut pg.afrl); //FMC_A12
+    // pg.pg3.into_af12(&mut pg.moder, &mut pg.afrl); //FMC_A13
+    // pg.pg4.into_af12(&mut pg.moder, &mut pg.afrl); //FMC_A14
+
+    gpiog.moder.modify(|_, w| {w.moder0().alternate()});
+    gpiog.afrl.modify(|_, w| {  w.afrl0().af12()});
+    gpiog.ospeedr.modify(|_, w| w.ospeedr0().very_high_speed());
+
+    
+    gpiog.moder.modify(|_, w| {w.moder1().alternate()});
+    gpiog.afrl.modify(|_, w| {  w.afrl1().af12()});
+    gpiog.ospeedr.modify(|_, w| w.ospeedr1().very_high_speed());
+
+    
+    gpiog.moder.modify(|_, w| {w.moder2().alternate()});
+    gpiog.afrl.modify(|_, w| {  w.afrl2().af12()});
+    gpiog.ospeedr.modify(|_, w| w.ospeedr2().very_high_speed());
+
+    
+    gpiog.moder.modify(|_, w| {w.moder3().alternate()});
+    gpiog.afrl.modify(|_, w| {  w.afrl3().af12()});
+    gpiog.ospeedr.modify(|_, w| w.ospeedr3().very_high_speed());
+
+    
+    gpiog.moder.modify(|_, w| {w.moder4().alternate()});
+    gpiog.afrl.modify(|_, w| {  w.afrl4().af12()});
+    gpiog.ospeedr.modify(|_, w| w.ospeedr4().very_high_speed());
+
+    gpiod.moder.modify(|_, w| {w.moder14().alternate()});
+    gpiod.afrh.modify(|_, w| {  w.afrh14().af12()});
+    gpiod.ospeedr.modify(|_, w| w.ospeedr14().very_high_speed());
+
+    gpiod.moder.modify(|_, w| {w.moder15().alternate()});
+    gpiod.afrh.modify(|_, w| {  w.afrh15().af12()});
+    gpiod.ospeedr.modify(|_, w| w.ospeedr15().very_high_speed());
+
+    gpiod.moder.modify(|_, w| {w.moder0().alternate()});
+    gpiod.afrl.modify(|_, w| {  w.afrl0().af12()});
+    gpiod.ospeedr.modify(|_, w| w.ospeedr0().very_high_speed());
+
+
+    gpiod.moder.modify(|_, w| {w.moder1().alternate()});
+    gpiod.afrl.modify(|_, w| {  w.afrl1().af12()});
+    gpiod.ospeedr.modify(|_, w| w.ospeedr1().very_high_speed());
+
+    gpioe.moder.modify(|_, w| {w.moder7().alternate()});
+    gpioe.afrl.modify(|_, w| {  w.afrl7().af12()});
+    gpioe.ospeedr.modify(|_, w| w.ospeedr7().very_high_speed());
+
+    gpioe.moder.modify(|_, w| {w.moder8().alternate()});
+    gpioe.afrh.modify(|_, w| {  w.afrh8().af12()});
+    gpioe.ospeedr.modify(|_, w| w.ospeedr8().very_high_speed());
+
+    gpioe.moder.modify(|_, w| {w.moder9().alternate()});
+    gpioe.afrh.modify(|_, w| {  w.afrh9().af12()});
+    gpioe.ospeedr.modify(|_, w| w.ospeedr9().very_high_speed());
+
+
+    gpioe.moder.modify(|_, w| {w.moder10().alternate()});
+    gpioe.afrh.modify(|_, w| {  w.afrh10().af12()});
+    gpioe.ospeedr.modify(|_, w| w.ospeedr10().very_high_speed());
+
+
+    gpiod.moder.modify(|_, w| {w.moder7().alternate()});
+    gpiod.afrl.modify(|_, w| {  w.afrl7().af12()});
+    gpiod.ospeedr.modify(|_, w| w.ospeedr7().very_high_speed());
+
+
+    gpiod.moder.modify(|_, w| {w.moder4().alternate()});
+    gpiod.afrl.modify(|_, w| {  w.afrl4().af12()});
+    gpiod.ospeedr.modify(|_, w| w.ospeedr4().very_high_speed());
+
+
+    gpiod.moder.modify(|_, w| {w.moder5().alternate()});
+    gpiod.afrl.modify(|_, w| {  w.afrl5().af12()});
+    gpiod.ospeedr.modify(|_, w| w.ospeedr5().very_high_speed());
  
-     // ph.ph0.into_af12(&mut ph.moder, &mut ph.afrl); //FMC_A0
-     // ph.ph1.into_af12(&mut ph.moder, &mut ph.afrl); //FMC_A1
-     // pf.pf2.into_af12(&mut pf.moder, &mut pf.afrl); //FMC_A2
-     // pf.pf3.into_af12(&mut pf.moder, &mut pf.afrl); //FMC_A3
-     // pf.pf4.into_af12(&mut pf.moder, &mut pf.afrl); //FMC_A4
-     // pf.pf5.into_af12(&mut pf.moder, &mut pf.afrl); //FMC_A5
- 
-     gpioh.moder.modify(|_, w| {w.moder0().alternate()});
-     gpioh.afrl.modify(|_, w| {  w.afrl0().af12()});
-     gpioh.ospeedr.modify(|_, w| w.ospeedr0().very_high_speed());
- 
- 
-     gpioh.moder.modify(|_, w| {w.moder1().alternate()});
-     gpioh.afrl.modify(|_, w| {  w.afrl1().af12()});
-     gpioh.ospeedr.modify(|_, w| w.ospeedr1().very_high_speed());
- 
- 
-     gpiof.moder.modify(|_, w| {w.moder2().alternate()});
-     gpiof.afrl.modify(|_, w| {  w.afrl2().af12()});
-     gpiof.ospeedr.modify(|_, w| w.ospeedr2().very_high_speed());
- 
- 
-     gpiof.moder.modify(|_, w| {w.moder3().alternate()});
-     gpiof.afrl.modify(|_, w| {  w.afrl3().af12()});
-     gpiof.ospeedr.modify(|_, w| w.ospeedr3().very_high_speed());
- 
-     gpiof.moder.modify(|_, w| {w.moder4().alternate()});
-     gpiof.afrl.modify(|_, w| {  w.afrl4().af12()});
-     gpiof.ospeedr.modify(|_, w| w.ospeedr4().very_high_speed());
- 
- 
-     gpiof.moder.modify(|_, w| {w.moder5().alternate()});
-     gpiof.afrl.modify(|_, w| {  w.afrl5().af12()});
-     gpiof.ospeedr.modify(|_, w| w.ospeedr5().very_high_speed());
- 
-         
-         // pf.pf12.into_af12(&mut pf.moder, &mut pf.afrh); //FMC_A6
-         // pf.pf13.into_af12(&mut pf.moder, &mut pf.afrh); //FMC_A7
-         // pf.pf14.into_af12(&mut pf.moder, &mut pf.afrh); //FMC_A8
-         // pf.pf15.into_af12(&mut pf.moder, &mut pf.afrh); //FMC_A9
- 
-     gpiof.moder.modify(|_, w| {w.moder12().alternate()});
-     gpiof.afrh.modify(|_, w| {  w.afrh12().af12()});
-     gpiof.ospeedr.modify(|_, w| w.ospeedr12().very_high_speed());
- 
- 
-     gpiof.moder.modify(|_, w| {w.moder13().alternate()});
-     gpiof.afrh.modify(|_, w| {  w.afrh13().af12()});
-     gpiof.ospeedr.modify(|_, w| w.ospeedr13().very_high_speed());
- 
- 
-     gpiof.moder.modify(|_, w| {w.moder14().alternate()});
-     gpiof.afrh.modify(|_, w| {  w.afrh14().af12()});
-     gpiof.ospeedr.modify(|_, w| w.ospeedr14().very_high_speed());
- 
- 
-     gpiof.moder.modify(|_, w| {w.moder15().alternate()});
-     gpiof.afrh.modify(|_, w| {  w.afrh15().af12()});
-     gpiof.ospeedr.modify(|_, w| w.ospeedr15().very_high_speed());
- 
-   // pg.pg0.into_af12(&mut pg.moder, &mut pg.afrl); //FMC_A10
-     // pg.pg1.into_af12(&mut pg.moder, &mut pg.afrl); //FMC_A11
-     // pg.pg2.into_af12(&mut pg.moder, &mut pg.afrl); //FMC_A12
-     // pg.pg3.into_af12(&mut pg.moder, &mut pg.afrl); //FMC_A13
-     // pg.pg4.into_af12(&mut pg.moder, &mut pg.afrl); //FMC_A14
- 
-     gpiog.moder.modify(|_, w| {w.moder0().alternate()});
-     gpiog.afrl.modify(|_, w| {  w.afrl0().af12()});
-     gpiog.ospeedr.modify(|_, w| w.ospeedr0().very_high_speed());
- 
-     
-     gpiog.moder.modify(|_, w| {w.moder1().alternate()});
-     gpiog.afrl.modify(|_, w| {  w.afrl1().af12()});
-     gpiog.ospeedr.modify(|_, w| w.ospeedr1().very_high_speed());
- 
-     
-     gpiog.moder.modify(|_, w| {w.moder2().alternate()});
-     gpiog.afrl.modify(|_, w| {  w.afrl2().af12()});
-     gpiog.ospeedr.modify(|_, w| w.ospeedr2().very_high_speed());
- 
-     
-     gpiog.moder.modify(|_, w| {w.moder3().alternate()});
-     gpiog.afrl.modify(|_, w| {  w.afrl3().af12()});
-     gpiog.ospeedr.modify(|_, w| w.ospeedr3().very_high_speed());
- 
-     
-     gpiog.moder.modify(|_, w| {w.moder4().alternate()});
-     gpiog.afrl.modify(|_, w| {  w.afrl4().af12()});
-     gpiog.ospeedr.modify(|_, w| w.ospeedr4().very_high_speed());
- 
-     gpiod.moder.modify(|_, w| {w.moder14().alternate()});
-     gpiod.afrh.modify(|_, w| {  w.afrh14().af12()});
-     gpiod.ospeedr.modify(|_, w| w.ospeedr14().very_high_speed());
- 
-     gpiod.moder.modify(|_, w| {w.moder15().alternate()});
-     gpiod.afrh.modify(|_, w| {  w.afrh15().af12()});
-     gpiod.ospeedr.modify(|_, w| w.ospeedr15().very_high_speed());
- 
-     gpiod.moder.modify(|_, w| {w.moder0().alternate()});
-     gpiod.afrl.modify(|_, w| {  w.afrl0().af12()});
-     gpiod.ospeedr.modify(|_, w| w.ospeedr0().very_high_speed());
- 
- 
-     gpiod.moder.modify(|_, w| {w.moder1().alternate()});
-     gpiod.afrl.modify(|_, w| {  w.afrl1().af12()});
-     gpiod.ospeedr.modify(|_, w| w.ospeedr1().very_high_speed());
- 
-     gpioe.moder.modify(|_, w| {w.moder7().alternate()});
-     gpioe.afrl.modify(|_, w| {  w.afrl7().af12()});
-     gpioe.ospeedr.modify(|_, w| w.ospeedr7().very_high_speed());
- 
-     gpioe.moder.modify(|_, w| {w.moder8().alternate()});
-     gpioe.afrh.modify(|_, w| {  w.afrh8().af12()});
-     gpioe.ospeedr.modify(|_, w| w.ospeedr8().very_high_speed());
- 
-     gpioe.moder.modify(|_, w| {w.moder9().alternate()});
-     gpioe.afrh.modify(|_, w| {  w.afrh9().af12()});
-     gpioe.ospeedr.modify(|_, w| w.ospeedr9().very_high_speed());
- 
- 
-     gpioe.moder.modify(|_, w| {w.moder10().alternate()});
-     gpioe.afrh.modify(|_, w| {  w.afrh10().af12()});
-     gpioe.ospeedr.modify(|_, w| w.ospeedr10().very_high_speed());
- 
- 
-     gpiod.moder.modify(|_, w| {w.moder7().alternate()});
-     gpiod.afrl.modify(|_, w| {  w.afrl7().af12()});
-     gpiod.ospeedr.modify(|_, w| w.ospeedr7().very_high_speed());
- 
- 
-     gpiod.moder.modify(|_, w| {w.moder4().alternate()});
-     gpiod.afrl.modify(|_, w| {  w.afrl4().af12()});
-     gpiod.ospeedr.modify(|_, w| w.ospeedr4().very_high_speed());
- 
- 
-     gpiod.moder.modify(|_, w| {w.moder5().alternate()});
-     gpiod.afrl.modify(|_, w| {  w.afrl5().af12()});
-     gpiod.ospeedr.modify(|_, w| w.ospeedr5().very_high_speed());
  
    // Configure FMC for SRAM memory(in our case F-RAM)
      unsafe{

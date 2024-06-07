@@ -85,7 +85,7 @@ fn print_log(log:&Log, log_count:&u16, log_sample_count:&u16)
     
     if *log_sample_count != 353 {
 	unsafe{
-	//utput_guard_start();
+	//output_guard_start();
 	//unsafe{printf(b"print log exit tripped!\r\n\0".as_ptr())}
     hprintln!("print log exit tripped! {}").unwrap();
 	//exit(0);
