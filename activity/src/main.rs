@@ -15,7 +15,7 @@ use volatile::Volatile;
 use cortex_m::peripheral::NVIC;
 
 mod checkpoint;
-use checkpoint::{checkpoint, restore, delete_pg, delete_all_pg};
+use checkpoint::{checkpoint, restore, delete_pg, delete_all_pg, transcation_log, execution_mode};
 
 fn gpioTwiddle() -> (){}
 
@@ -616,7 +616,9 @@ pub extern "C" fn EXTI0() {
         peripherals.EXTI.pr1.modify(|_, w| w.pr0().set_bit());
     }
     interrupt::disable();
-    checkpoint();
+    if unsafe{execution_mode} {
+        checkpoint();
+    }
     unsafe {interrupt::enable();}
 }
 

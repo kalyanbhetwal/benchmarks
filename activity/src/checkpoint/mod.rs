@@ -9,9 +9,38 @@ use panic_halt as _;
 
 use::core::arch::asm;
 use stm32f3xx_hal_v2::{pac::Peripherals, pac::FLASH};
-
 use volatile::Volatile;
 
+pub static mut transcation_log: u32 = 0x60004000; 
+pub static mut execution_mode: bool = true; 
+
+pub fn start_atomic<T>(region:i8,mem_locs: &[&u8], sizes: &[usize]){
+    checkpoint();
+    //undo or redo updates
+    //memcopy some variables
+    match region {
+        1 => {
+           unsafe{ptr::write(transcation_log as *mut u8, 1);}
+            unsafe {
+                let mut step = 0;
+                for (mem_loc, size) in mem_locs.iter().zip(sizes.iter()) {
+                    let byte_ptr = *mem_loc as *const u8;    
+                    for i in 0..*size{
+                        ptr::write( (transcation_log+i as u32) as *mut u8 , *byte_ptr.add(i));   
+                    }
+                    step = step + *size;
+                    }
+                 }
+            }
+        _ => (),
+    }
+    unsafe{execution_mode = false;}
+}
+
+
+pub fn end_atomic(){
+    unsafe {execution_mode = true;}
+}
 
 #[no_mangle]
 pub fn checkpoint(){
