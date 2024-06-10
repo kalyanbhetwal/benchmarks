@@ -14,40 +14,35 @@ use volatile::Volatile;
 pub static mut transcation_log: u32 = 0x60004000; 
 pub static mut execution_mode: bool = true; 
 
-pub fn start_atomic<T>(region:i8,mem_locs: &[&u8], sizes: &[usize]){
+pub fn start_atomic<T>(mem_locs: &[&u8], sizes: &[usize]){
     checkpoint(true);
     //undo or redo updates
     //memcopy some variables
-    match region {
-        1 => {
            //unsafe{ptr::write(transcation_log as *mut u8, 1);} //still debating this
-            unsafe {
-                let mut step = 0;
-                for (mem_loc, size) in mem_locs.iter().zip(sizes.iter()) {
-                    
-                    for i in 0..4 {
-                        let byte = (*mem_loc >> (i * 8)) as u8; // Extract the byte at position i
-                        ptr::write((transcation_log+i as u32) as *mut u8 , byte);
-                    }
-
-                    transcation_log += 4;
-
-                    ptr::write((transcation_log) as *mut u8 , *size as u8);
-
-                    let byte_ptr = *mem_loc as *const u8;    
-                    for i in 0..*size{
-                        ptr::write( (transcation_log+i as u32) as *mut u8 , *byte_ptr.add(i));   
-                    }
-                    step = step + *size;
-                    transcation_log =  transcation_log + *size as u32;
-                    }
-                    ptr::write( transcation_log as *mut u8 ,0xFB);   // mark end of the transcation
-                    transcation_log = 0x60004000;
-
-                 }
+    unsafe {
+        let mut step = 0;
+        for (mem_loc, size) in mem_locs.iter().zip(sizes.iter()) {
+            
+            for i in 0..4 {
+                let byte = (*mem_loc >> (i * 8)) as u8; // Extract the byte at position i
+                ptr::write((transcation_log+i as u32) as *mut u8 , byte);
             }
-        _ => (),
-    }
+
+            transcation_log += 4;
+
+            ptr::write((transcation_log) as *mut u8 , *size as u8);
+
+            let byte_ptr = *mem_loc as *const u8;    
+            for i in 0..*size{
+                ptr::write( (transcation_log+i as u32) as *mut u8 , *byte_ptr.add(i));   
+            }
+            step = step + *size;
+            transcation_log =  transcation_log + *size as u32;
+            }
+            ptr::write( transcation_log as *mut u8 ,0xFB);   // mark end of the transcation
+            transcation_log = 0x60004000;
+
+            }  
     unsafe{execution_mode = false;}
 }
 
