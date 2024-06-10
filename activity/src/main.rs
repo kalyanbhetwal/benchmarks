@@ -433,7 +433,7 @@ fn main() -> ! {
      while dp.RCC.cr.read().pllrdy().bit_is_clear(){}
  
         // Configure prescalar values for HCLK, PCLK1, and PCLK2
-        dp.RCC.cfgr.modify(|_, w| {
+    dp.RCC.cfgr.modify(|_, w| {
          w.hpre().div1() // HCLK prescaler: no division
          .ppre1().div2() // PCLK1 prescaler: divide by 2
          .ppre2().div1() // PCLK2 prescaler: no division
@@ -536,7 +536,7 @@ fn main() -> ! {
    }
    
 unsafe{
-    let dp = Peripherals::steal(); //take().unwrap();
+    //let dp = Peripherals::steal(); //take().unwrap();
 
     // Enable the clock for GPIOA and SYSCFG
     dp.RCC.ahbenr.modify(|_, w| w.iopaen().set_bit());

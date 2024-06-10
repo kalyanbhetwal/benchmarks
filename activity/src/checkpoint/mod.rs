@@ -24,10 +24,21 @@ pub fn start_atomic<T>(region:i8,mem_locs: &[&u8], sizes: &[usize]){
             unsafe {
                 let mut step = 0;
                 for (mem_loc, size) in mem_locs.iter().zip(sizes.iter()) {
+                    
+                    for i in 0..4 {
+                        let byte = (*mem_loc >> (i * 8)) as u8; // Extract the byte at position i
+                        ptr::write((transcation_log+i as u32) as *mut u8 , byte);
+                    }
+
+                    transcation_log += 5;
+
+                    ptr::write((transcation_log) as *mut u8 , *size as u8);
+
                     let byte_ptr = *mem_loc as *const u8;    
                     for i in 0..*size{
                         ptr::write( (transcation_log+i as u32) as *mut u8 , *byte_ptr.add(i));   
                     }
+                    transcation_log = 0x60004000;
                     step = step + *size;
                     }
                  }
