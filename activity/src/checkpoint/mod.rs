@@ -398,10 +398,16 @@ pub fn restore()->bool{
             flash_start_address+=offset;
         }
         flash_start_address+=4;
-       
+
+        if  ptr::read_volatile(flash_start_address as *const u32) == 0xDEAD_BEEF{
+            restore_globals();
+        }
+
         // let mut end_address = 0x0801_0004 + packet_size;
         // let recent_frame_size: u32 = ptr::read_volatile(end_address as *const u32);
         // let mut recent_frame_start_address = end_address - recent_frame_size;
+
+        flash_start_address+=4;
 
         asm!(
             "mov r0, {0}",
