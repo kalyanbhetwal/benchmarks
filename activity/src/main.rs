@@ -622,7 +622,7 @@ pub extern "C" fn EXTI0() {
     }
     interrupt::disable();
     if unsafe{execution_mode} {
-        checkpoint();
+        checkpoint(false);
     }
     unsafe {interrupt::enable();}
 }

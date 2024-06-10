@@ -15,7 +15,7 @@ pub static mut transcation_log: u32 = 0x60004000;
 pub static mut execution_mode: bool = true; 
 
 pub fn start_atomic<T>(region:i8,mem_locs: &[&u8], sizes: &[usize]){
-    checkpoint();
+    checkpoint(true);
     //undo or redo updates
     //memcopy some variables
     match region {
@@ -30,7 +30,7 @@ pub fn start_atomic<T>(region:i8,mem_locs: &[&u8], sizes: &[usize]){
                         ptr::write((transcation_log+i as u32) as *mut u8 , byte);
                     }
 
-                    transcation_log += 5;
+                    transcation_log += 4;
 
                     ptr::write((transcation_log) as *mut u8 , *size as u8);
 
@@ -54,7 +54,7 @@ pub fn end_atomic(){
 }
 
 #[no_mangle]
-pub fn checkpoint(){
+pub fn checkpoint(c_type:bool){
 
     unsafe {
         asm!(
