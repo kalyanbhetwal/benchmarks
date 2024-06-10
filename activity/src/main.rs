@@ -395,12 +395,8 @@ fn select_mode(prev_pin_state:&mut u8, count: &mut u16) -> u8
 
     return pin_state;
 }
-#[entry]
-fn main() -> ! {
 
-    //delete_all_pg();
-    //delete_pg(0x0803_0000 as u32); 
-    // Get the peripheral access
+fn initialization(){
     let dp  = Peripherals::take().unwrap();
     
      //enable HSI
@@ -554,9 +550,18 @@ unsafe{
     }
     // Enable EXTI0 interrupt in the NVIC
     unsafe { NVIC::unmask(Interrupt::EXTI0) };
+}
+#[entry]
+fn main() -> ! {
+
+    //delete_all_pg();
+    //delete_pg(0x0803_0000 as u32); 
+    // Get the peripheral access
 
     // Enable interrupts globally
     // unsafe { cortex_m::peripheral::NVIC::unmask(Interrupt::EXTI0) };
+
+    initialization();
 
     let mut prev_pin_state:u8 = run_mode_t::MODE_IDLE as u8;
     let count: &'static mut u16 = big_nv!(COUNT_NV: u16 = 1);

@@ -38,9 +38,9 @@ pub fn start_atomic<T>(region:i8,mem_locs: &[&u8], sizes: &[usize]){
                     for i in 0..*size{
                         ptr::write( (transcation_log+i as u32) as *mut u8 , *byte_ptr.add(i));   
                     }
-                    transcation_log = 0x60004000;
                     step = step + *size;
                     }
+                    transcation_log = 0x60004000;
                  }
             }
         _ => (),
