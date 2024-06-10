@@ -20,7 +20,7 @@ pub fn start_atomic<T>(region:i8,mem_locs: &[&u8], sizes: &[usize]){
     //memcopy some variables
     match region {
         1 => {
-           unsafe{ptr::write(transcation_log as *mut u8, 1);}
+           //unsafe{ptr::write(transcation_log as *mut u8, 1);} //still debating this
             unsafe {
                 let mut step = 0;
                 for (mem_loc, size) in mem_locs.iter().zip(sizes.iter()) {
@@ -39,8 +39,11 @@ pub fn start_atomic<T>(region:i8,mem_locs: &[&u8], sizes: &[usize]){
                         ptr::write( (transcation_log+i as u32) as *mut u8 , *byte_ptr.add(i));   
                     }
                     step = step + *size;
+                    transcation_log =  transcation_log + *size as u32;
                     }
+                    ptr::write( transcation_log as *mut u8 ,0xFB);   // mark end of the transcation
                     transcation_log = 0x60004000;
+
                  }
             }
         _ => (),
@@ -58,7 +61,7 @@ pub fn checkpoint(c_type:bool){
 
     unsafe {
         asm!(
-            "add sp, #272"
+            "add sp, #280"
         );
     }
     unsafe {
@@ -73,7 +76,7 @@ pub fn checkpoint(c_type:bool){
     }
     unsafe {
         asm!(
-            "sub sp, #272"
+            "sub sp, #280"
         );
     }
 
@@ -207,7 +210,7 @@ pub fn checkpoint(c_type:bool){
     // have to be extra careful for the sp value
     unsafe {
         asm!(
-            "add r0, #280",
+            "add r0, #288",
         );
     }
     unsafe {
@@ -216,9 +219,6 @@ pub fn checkpoint(c_type:bool){
             out(reg) r13_sp
         );
     }
-    
-    //let dp = Peripherals::take().unwrap();
-
     unsafe{
 
         let  dp = Peripherals::steal();
@@ -245,7 +245,12 @@ pub fn checkpoint(c_type:bool){
 
         let mut checkpoint_size= Volatile::new(0u32);
         asm::dmb();
-        checkpoint_size.write(stack_size+4+16*4 +4);
+        // 1. stack size
+        // 2. 4 bytes -> 0xf1f1_f1f1 (end of stack in the frame magic number)
+        // 3. 16 * 4 -> all the cpu registers
+        // 4. 4 bytes -> size of frame
+        // 5. 4 bytes -> 0xDEADBEEF (magic number to indicate the static checkpoint)
+        checkpoint_size.write(stack_size+4+16*4 +4 +4);
         asm::dmb();
 
         loop{
@@ -284,6 +289,13 @@ pub fn checkpoint(c_type:bool){
     //         write_to_flash(&mut flash,  0x0801_0000 as u32, offset+checkpoint_size+1-1  as u32);
     //      }
     asm::dmb(); 
+        if c_type {
+            //write at the begining of checkpoint fram so magic number indicate jit or static checkpoint
+            write_to_flash(&mut flash,  flash_start_address.read() as u32, 0xDEADBEEF as u32);
+        }
+        else{
+            write_to_flash(&mut flash,  flash_start_address.read() as u32,  0x000000001 as u32);
+        }
          while start_address >= end_address{
             let mut data = Volatile::new(0u32);
             data.write(core::ptr::read_volatile(start_address as * const u32));
@@ -335,6 +347,30 @@ pub fn erase_all(flash: &mut FLASH){
 
 }
 
+pub fn restore_globals(){
+    unsafe{
+        loop {
+            let mut combined:u32 = 0;
+            for i in 0..4 {
+                combined |= (ptr::read((transcation_log + i) as *const u32) << (i * 8));
+            
+            }
+            
+            let mut size:u8 = ptr::read( transcation_log as *const u8);
+        
+            for i in 0..size{
+                ptr::write((combined + i as u32) as *mut u8,*((transcation_log + i as u32) as *const u8));
+            }
+            combined =  combined + size as u32;
+
+            let end = ptr::read(combined as *const u8);
+            
+            if end == 0xFB{
+                break;
+            }
+        }
+    }
+}
 pub fn restore()->bool{
     unsafe {
         let mut flash_start_address = 0x0803_0000;

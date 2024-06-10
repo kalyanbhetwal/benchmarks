@@ -585,13 +585,13 @@ fn main() -> ! {
     
    restore();
 
+   checkpoint(false);
     loop {
         let mut localSeed = *_v_seed;
         let mode:u8 = select_mode(&mut prev_pin_state, count);
         if mode == 2 {
             train(&mut model.stationary, &mut localSeed);
         } else if mode == 1 {
-            
             train(&mut model.moving, &mut localSeed);
         } else if mode == 0 {
             recognize(&model, &mut localSeed);
